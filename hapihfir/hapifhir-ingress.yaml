@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hapifhir-ingress
+  namespace: cooking-on-fire
+spec:
+  rules:
+  - host: hapifhir
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: hapifhir
+            port: 
+              number: 80

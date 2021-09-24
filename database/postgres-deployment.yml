@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: cooking-on-fire
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:13.4
+        envFrom:
+        - secretRef:
+            name: dev-db-secret
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: postgres-data
+          - mountPath: /etc/postgresql
+            name: config
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-vol
+        - name: config
+          configMap:
+            name: postgres-configmap

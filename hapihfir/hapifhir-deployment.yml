@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hapifhir
+  namespace: cooking-on-fire
+spec:
+  selector:
+    matchLabels:
+      app: hapifhir
+  template:
+    metadata:
+      labels:
+        app: hapifhir
+    spec:
+      containers:
+      - name: postgres
+        image: hapiproject/hapi:v5.4.1
+        envFrom:
+        - secretRef:
+            name: spring-datasource-url
+        - secretRef:
+            name: spring-datasource-username
+        - secretRef:
+            name: spring-datasource-password
+        env:
+          - name: SPRING_DATASOURCE_DRIVERCLASSNAME
+            value: org.postgresql.Driver
+          - name: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
+            value: org.hibernate.dialect.PostgreSQL95Dialect
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
